@@ -3,7 +3,7 @@ const ganache = require("ganache");
 const { beforeEach } = require("mocha");
 const { Web3 } = require("web3");
 const web3 = new Web3(ganache.provider());
-const compiledSolidity = require("../compile");
+const { abi, evm } = require('../compile');
 
 let acounts;
 let inbox;
@@ -11,10 +11,9 @@ const INITIAL_MESSAGE = "Hi there!";
 
 beforeEach(async () => {
   accounts = await web3.eth.getAccounts();
-  const inboxContract = compiledSolidity.contracts["Inbox.sol"]["Inbox"];
-  inbox = await new web3.eth.Contract(inboxContract.abi)
+  inbox = await new web3.eth.Contract(abi)
     .deploy({
-      data: inboxContract.evm.bytecode.object,
+      data: evm.bytecode.object,
       arguments: [INITIAL_MESSAGE],
     })
     .send({ from: accounts[0], gas: "1000000" });
